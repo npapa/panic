@@ -18,7 +18,11 @@ package gr.ntua.ece.cslab.panic.core.models;
 
 import gr.ntua.ece.cslab.panic.core.containers.beans.InputSpacePoint;
 import gr.ntua.ece.cslab.panic.core.containers.beans.OutputSpacePoint;
+
+import java.util.HashMap;
 import java.util.List;
+
+import weka.classifiers.Classifier;
 
 /**
  * This interface is inherited to each defined approximation model.
@@ -59,15 +63,29 @@ public interface Model {
      */
     public OutputSpacePoint getPoint(InputSpacePoint point) throws Exception;
 
+    public OutputSpacePoint getPoint(InputSpacePoint point, OutputSpacePoint outputPoint) throws Exception;
     
     /**
      * Method used to provide specific instructions for each classifier.
      */
-    public void configureClassifier();
+    public void configureClassifier(HashMap<String, String> conf);
 
     /**
      * Method used to get the sampled points along with their experimental values.
      * @return 
      */
     public List<OutputSpacePoint> getOriginalPointValues();
+
+	public void serialize(String file) throws Exception; 
+	
+	public Classifier getClassifier();
+	public void setClassifier(Classifier classifier);
+
+	HashMap<String, String> getOutputSpace();
+
+	void setOutputSpace(HashMap<String, String> outputSpace);
+
+	void setInputSpace(HashMap<String, String> inputSpace);
+
+	HashMap<String, String> getInputSpace();
 }

@@ -16,6 +16,9 @@
 
 package gr.ntua.ece.cslab.panic.core.containers.beans;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 /**
  *
  * @author Giannis Giannakopoulos
@@ -23,10 +26,15 @@ package gr.ntua.ece.cslab.panic.core.containers.beans;
 public class OutputSpacePoint  {
     
     private InputSpacePoint inputSpacePoint;
+    private HashMap<String,Double> outputPoints;
     private double value;
     private String key;
 
-    
+
+	public OutputSpacePoint() {
+		outputPoints = new HashMap<String, Double>();
+	}
+	
     public double getValue() {
         return value;
     }
@@ -58,8 +66,27 @@ public class OutputSpacePoint  {
 
     @Override
     public String toString() {
-        return this.inputSpacePoint.toString()+" -> ("+ this.value+")";
+    	String ret = "";
+    	ret+=this.inputSpacePoint.toString()+" -> (";
+    	for( Entry<String, Double> e : outputPoints.entrySet()){
+    		ret+=e.getValue()+", ";
+    	}
+    	ret+=")";
+        return ret;
     }
+
+
+	public void setValues(HashMap<String, Double> values) {
+		this.outputPoints = values;
+	}
+
+	public HashMap<String, Double> getOutputPoints() {
+		return outputPoints;
+	}
+
+	public int numberDimensions() {
+		return outputPoints.size();
+	}
     
     
     

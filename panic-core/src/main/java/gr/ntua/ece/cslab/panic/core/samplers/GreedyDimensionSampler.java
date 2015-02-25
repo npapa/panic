@@ -6,7 +6,9 @@ import gr.ntua.ece.cslab.panic.core.models.Discretization;
 import gr.ntua.ece.cslab.panic.core.models.IsoRegression;
 import gr.ntua.ece.cslab.panic.core.models.Model;
 import gr.ntua.ece.cslab.panic.core.utils.CSVFileManager;
+
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class GreedyDimensionSampler extends AbstractAdaptiveSampler {
     
     public GreedyDimensionSampler() {
         super();
-        this.picked = new HashSet<>();
+        this.picked = new HashSet<InputSpacePoint>();
     }
 
     @Override
@@ -71,7 +73,7 @@ public class GreedyDimensionSampler extends AbstractAdaptiveSampler {
         int pointIdex = this.pointsPicked - 1; // super.next() is already called
         Integer unpadded = new Integer(Integer.toBinaryString(pointIdex));
         char[] bitmask = String.format("%0" + bitsPadding + "d", unpadded).toCharArray();
-        List<String> keys = new LinkedList<>(this.ranges.keySet());
+        List<String> keys = new LinkedList<String>(this.ranges.keySet());
         Collections.sort(keys);
 
         InputSpacePoint result = new InputSpacePoint();
@@ -140,7 +142,7 @@ public class GreedyDimensionSampler extends AbstractAdaptiveSampler {
         file.setFilename(args[0]);
 
         Model model = new IsoRegression();
-        model.configureClassifier();
+        model.configureClassifier(new HashMap<String, String>());
 
         GreedyDimensionSampler sampler = new GreedyDimensionSampler();
         sampler.setSamplingRate(0.3);

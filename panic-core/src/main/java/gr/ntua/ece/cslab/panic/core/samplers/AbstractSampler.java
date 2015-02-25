@@ -6,6 +6,7 @@
 package gr.ntua.ece.cslab.panic.core.samplers;
 
 import gr.ntua.ece.cslab.panic.core.containers.beans.InputSpacePoint;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class AbstractSampler implements Sampler {
     protected int maxChoices;
 
     public AbstractSampler() {
-        this.ranges = new HashMap<>();
+        this.ranges = new HashMap<String, List<Double>>();
         this.samplingRate = Double.MAX_VALUE;
         this.pointsPicked = 0;
 

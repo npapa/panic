@@ -17,9 +17,15 @@ package gr.ntua.ece.cslab.panic.core.models;
 
 import gr.ntua.ece.cslab.panic.core.containers.beans.InputSpacePoint;
 import gr.ntua.ece.cslab.panic.core.containers.beans.OutputSpacePoint;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+
 import weka.classifiers.Classifier;
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.functions.SimpleLinearRegression;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -33,12 +39,35 @@ public abstract class AbstractWekaModel implements Model {
 
     protected List<OutputSpacePoint> pointsSampled;
     protected Classifier classifier;
+    protected HashMap<String,String> inputSpace;
+    protected HashMap<String,String> outputSpace;
     
     public AbstractWekaModel() {
-        this.pointsSampled = new LinkedList<>();
+        this.pointsSampled = new LinkedList<OutputSpacePoint>();
     }
     
     @Override
+    public HashMap<String, String> getInputSpace() {
+		return inputSpace;
+	}
+
+    @Override
+	public void setInputSpace(HashMap<String, String> inputSpace) {
+		this.inputSpace = inputSpace;
+	}
+
+	@Override
+	public HashMap<String, String> getOutputSpace() {
+		return outputSpace;
+	}
+
+	@Override
+	public void setOutputSpace(HashMap<String, String> outputSpace) {
+		this.outputSpace = outputSpace;
+	}
+
+
+	@Override
     public void feed(OutputSpacePoint point) throws Exception{
         this.feed(point, true);
     }
@@ -63,6 +92,41 @@ public abstract class AbstractWekaModel implements Model {
         return result;
     }
 
+    @Override
+    public OutputSpacePoint getPoint(InputSpacePoint point, OutputSpacePoint outputPoint) throws Exception {
+        outputPoint.setInputSpacePoint(point);
+        //result.setValues(values);
+        Instance instance = convertPointToInstance(point,outputPoint);
+        this.classifier.classifyInstance(instance);
+        int index = point.numberDimensions();
+        for(String k : outputPoint.getOutputPoints().keySet()){
+        	outputPoint.getOutputPoints().put(k, instance.value(index));
+        	index++;
+        }
+        //result.setValue("objective", ));
+        return outputPoint;
+    }
+    
+    @Override
+    public void serialize(String filename) throws Exception {
+    	weka.core.SerializationHelper.write(filename, classifier);
+    }
+
+    public static Model readFromFile(String directory) throws Exception {
+
+    	 Classifier cls = (Classifier) weka.core.SerializationHelper.read(directory);
+    	 Class wekaClass = cls.getClass();
+    	 Model ret = null;
+    	 if(wekaClass.equals(MultilayerPerceptron.class)){
+    		 ret = (Model) MLPerceptron.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(SimpleLinearRegression.class)){
+    		 ret = (Model) LinearRegression.class.getConstructor().newInstance();
+    	 }
+         ret.setClassifier(cls);
+    	 return ret;
+    }
+    
     /**
      * Returns the list of sampled points along with their values.
      * @return 
@@ -93,6 +157,34 @@ public abstract class AbstractWekaModel implements Model {
      * @param point
      * @return 
      */
+    public static Instance convertPointToInstance(InputSpacePoint point, OutputSpacePoint outputPoint) {
+        Instance inst = new  Instance(point.numberDimensions()+outputPoint.numberDimensions());
+        int index = 0;
+        for(String k:point.getKeysAsCollection()){
+            Attribute att = new Attribute(k, index++);
+            inst.setValue(att, point.getValue(k));
+        }
+        for(String k : outputPoint.getOutputPoints().keySet()){
+            inst.setMissing(index++);
+        }
+        
+        
+        //assign instance to dataset
+        FastVector att  = new FastVector(point.numberDimensions()+1);
+        for(String s:point.getKeysAsCollection())
+            att.addElement(new Attribute(s, index++));
+        for(String k : outputPoint.getOutputPoints().keySet()){
+            att.addElement(new Attribute(k, index++));
+        }
+        
+        
+        Instances dataset = new Instances("instances", att, point.numberDimensions()+1);
+        dataset.setClassIndex(dataset.numAttributes()-1);
+        inst.setDataset(dataset);
+        return inst;
+    }
+    
+
     public static Instance convertPointToInstance(InputSpacePoint point) {
         Instance inst = new  Instance(point.numberDimensions()+1);
         int index = 0;
@@ -136,4 +228,14 @@ public abstract class AbstractWekaModel implements Model {
         instances.setClassIndex(instances.numAttributes()-1);
         return instances;
     }
+
+    @Override
+	public Classifier getClassifier() {
+		return classifier;
+	}
+
+    @Override
+	public void setClassifier(Classifier classifier) {
+		this.classifier = classifier;
+	}
 }

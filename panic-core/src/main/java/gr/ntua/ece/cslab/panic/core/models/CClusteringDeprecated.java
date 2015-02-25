@@ -1,5 +1,7 @@
 package gr.ntua.ece.cslab.panic.core.models;
 
+import java.util.HashMap;
+
 import weka.classifiers.meta.ClassificationViaClustering;
 
 /**
@@ -14,7 +16,7 @@ public class CClusteringDeprecated extends AbstractWekaModel {
     }
 
     @Override
-    public void configureClassifier() {
+    public void configureClassifier(HashMap<String, String> conf) {
         // nothing here
     }
     

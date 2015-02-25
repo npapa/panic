@@ -16,6 +16,8 @@
 
 package gr.ntua.ece.cslab.panic.core.models;
 
+import java.util.HashMap;
+
 import weka.classifiers.functions.MultilayerPerceptron;
 
 /**
@@ -30,7 +32,7 @@ public class MLPerceptron extends AbstractWekaModel {
     }
     
     @Override
-    public void configureClassifier() {
+    public void configureClassifier(HashMap<String, String> conf) {
         //no configuration for now
     }
 }

@@ -94,7 +94,7 @@ public class Benchmark {
      */
     
     public static Class<? extends Model>[] discoverModels() {
-        List<Class<? extends Model>> list = new ArrayList<>();
+        List<Class<? extends Model>> list = new ArrayList<Class<? extends Model>>();
         Reflections reflections = new Reflections("gr.ntua.ece.cslab");
         for (Class<? extends Model> c : reflections.getSubTypesOf(Model.class)) {
             if (!c.getName().toLowerCase().contains("abstract") && !c.getName().toLowerCase().contains("deprecated")) {
@@ -118,7 +118,7 @@ public class Benchmark {
      * @return
      */
     public static Class<? extends Sampler>[] discoverSamplers() {
-        List<Class<? extends Sampler>> list = new ArrayList<>();
+        List<Class<? extends Sampler>> list = new ArrayList<Class<? extends Sampler>>();
         Reflections reflections = new Reflections("gr.ntua.ece.cslab");
         for (Class<? extends Sampler> c : reflections.getSubTypesOf(Sampler.class)) {
             if (!c.getName().toLowerCase().contains("abstract")) {

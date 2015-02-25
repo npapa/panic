@@ -37,7 +37,7 @@ public class MultiPoint implements Serializable{
     private HashMap<String, Double> values;
 
     public MultiPoint() {
-        this.values = new HashMap<>();
+        this.values = new HashMap<String, Double>();
     }
    
     public HashMap<String, Double> getValues() {

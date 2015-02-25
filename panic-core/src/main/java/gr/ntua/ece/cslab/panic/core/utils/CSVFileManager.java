@@ -19,6 +19,7 @@ package gr.ntua.ece.cslab.panic.core.utils;
 import au.com.bytecode.opencsv.CSVReader;
 import gr.ntua.ece.cslab.panic.core.containers.beans.InputSpacePoint;
 import gr.ntua.ece.cslab.panic.core.containers.beans.OutputSpacePoint;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -104,7 +105,7 @@ public class CSVFileManager {
         try {
             CSVReader reader = new CSVReader(new FileReader(filename), delimiter, '#', 1);
             String[] line;
-            results = new LinkedList<>();
+            results = new LinkedList<OutputSpacePoint>();
             while((line = reader.readNext())!=null) {
                 OutputSpacePoint point = new OutputSpacePoint();
                 point.setInputSpacePoint(new InputSpacePoint());
@@ -125,7 +126,7 @@ public class CSVFileManager {
     
     public List<InputSpacePoint> getInputSpacePoints() {
         List<OutputSpacePoint> points = this.getOutputSpacePoints();
-        List<InputSpacePoint> results = new LinkedList<>();
+        List<InputSpacePoint> results = new LinkedList<InputSpacePoint>();
         for(OutputSpacePoint p :points)
             results.add(p.getInputSpacePoint());
         return results;
@@ -137,7 +138,7 @@ public class CSVFileManager {
      */
   
     public HashMap<String, List<Double>> getDimensionRanges() {
-        HashMap<String, Set<Double>> temp = new HashMap<>();
+        HashMap<String, Set<Double>> temp = new HashMap<String, Set<Double>>();
         List<InputSpacePoint> points = this.getInputSpacePoints();
         for(InputSpacePoint p : points) {
             for(String key : p.getKeysAsCollection()) {
@@ -146,9 +147,9 @@ public class CSVFileManager {
                 temp.get(key).add(p.getValue(key));
             }
         }
-        HashMap<String, List<Double>> results = new HashMap<>();
+        HashMap<String, List<Double>> results = new HashMap<String, List<Double>>();
         for(String s: temp.keySet())
-            results.put(s, new LinkedList<>(temp.get(s)));
+            results.put(s, new LinkedList<Double>(temp.get(s)));
         return results;
     }
     

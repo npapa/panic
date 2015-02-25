@@ -17,10 +17,13 @@ package gr.ntua.ece.cslab.panic.core.client;
 
 import gr.ntua.ece.cslab.panic.core.containers.beans.InputSpacePoint;
 import gr.ntua.ece.cslab.panic.core.containers.beans.OutputSpacePoint;
+import gr.ntua.ece.cslab.panic.core.models.AbstractWekaModel;
 import gr.ntua.ece.cslab.panic.core.models.Model;
 import gr.ntua.ece.cslab.panic.core.samplers.AbstractAdaptiveSampler;
 import gr.ntua.ece.cslab.panic.core.samplers.Sampler;
 import gr.ntua.ece.cslab.panic.core.utils.CSVFileManager;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,12 +40,13 @@ public class Main extends Benchmark {
 
         long benchmarkStart = System.currentTimeMillis();
         configure(args);        // instantiating models and samplers
-
+        String debug="";
+        int ii =0;
         for (Sampler s : samplers) {
             instantiateModels();
             instantiateSamplers();
             for (Model m : models) {
-                m.configureClassifier();
+                m.configureClassifier(new HashMap<String, String>());
             }
             
             if(s instanceof AbstractAdaptiveSampler) {
@@ -61,7 +65,7 @@ public class Main extends Benchmark {
 
             // models training
             int i = 1;
-            List<InputSpacePoint> picked = new LinkedList<>();
+            List<InputSpacePoint> picked = new LinkedList<InputSpacePoint>();
             System.out.println("Sampler:\t"+s.getClass().toString());
             while (s.hasMore()) {
                 InputSpacePoint nextSample = s.next();
@@ -77,6 +81,17 @@ public class Main extends Benchmark {
             for (Model m : models) {
                 m.train();
             }
+            for(Model m : models){
+            	InputSpacePoint ip =  new InputSpacePoint();
+                HashMap<String, Double> values = new HashMap<String, Double>();
+                values.put("x1", 2.0);
+                values.put("x2", 1.0);
+                values.put("x3", 70.0);
+                ip.setValues(values);
+                debug+= m.getPoint(ip)+" !\n";
+            	m.serialize("/Users/npapa/Documents/workspace/panic/panic-core/models/mlp"+ii+".model");
+            	ii++;
+            }
             System.out.format("Done! [%d ms]\n", System.currentTimeMillis()-start);
 
             // models are created and the results are printed...
@@ -87,7 +102,18 @@ public class Main extends Benchmark {
             
             reportOnMetrics(file, s, picked);
         }
-        
+        System.out.println(debug);
+        for (int i = 0; i < ii; i++) {
+            Model test = AbstractWekaModel.readFromFile("/Users/npapa/Documents/workspace/panic/panic-core/models/mlp"+i+".model");
+            InputSpacePoint ip =  new InputSpacePoint();
+            HashMap<String, Double> values = new HashMap<String, Double>();
+            values.put("x1", 2.0);
+            values.put("x2", 1.0);
+            values.put("x3", 70.0);
+            ip.setValues(values);
+            System.out.println(test.getPoint(ip));
+			
+		}
         
         
         System.out.println("Flushing output stream...");

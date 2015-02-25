@@ -17,6 +17,7 @@
 package gr.ntua.ece.cslab.panic.core.samplers;
 
 import gr.ntua.ece.cslab.panic.core.containers.beans.InputSpacePoint;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class RandomSampler extends AbstractStaticSampler {
     public RandomSampler() {
         super();
         this.random = new Random();
-        this.chosenIds = new HashSet<>();
+        this.chosenIds = new HashSet<Integer>();
     }
 
     @Override

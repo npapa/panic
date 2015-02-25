@@ -16,6 +16,8 @@
 
 package gr.ntua.ece.cslab.panic.core.models;
 
+import java.util.HashMap;
+
 import weka.classifiers.meta.Bagging;
 
 /**
@@ -30,7 +32,7 @@ public class BagClassify extends AbstractWekaModel {
     }
 
     @Override
-    public void configureClassifier() {
+    public void configureClassifier(HashMap<String, String> conf) {
         // do nothing for now
     }
     
