@@ -1,10 +1,8 @@
 package gr.ntua.ece.cslab.panic.core.models;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import gr.ntua.ece.cslab.panic.core.classifier.UserFunctionClassifier;
-import weka.classifiers.functions.MultilayerPerceptron;
 
 public class UserFunction extends AbstractWekaModel {
     

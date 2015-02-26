@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -42,6 +43,7 @@ public class CSVFileManager {
     private int numberOfInputDimensions;
     private int outputDimensionIndex;
     private char delimiter = '\t';
+    private List<String> variables;
     
     public CSVFileManager() {
         
@@ -56,10 +58,18 @@ public class CSVFileManager {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filename));
             String buffer = null;
-            while(reader.ready())
+            if(reader.ready()){
                 buffer = reader.readLine();
-            numberOfInputDimensions  = buffer.split("\t").length -1;
-            outputDimensionIndex  = buffer.split("\t").length -1;
+                String[] header = buffer.split("\t");
+                
+                numberOfInputDimensions  = header.length -1;
+                outputDimensionIndex  = header.length -1;
+                variables = new ArrayList<String>(header.length);
+                for (int i = 0; i < header.length; i++) {
+					variables.add(header[i]);
+				}
+                System.out.println(variables);
+            }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CSVFileManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -110,8 +120,10 @@ public class CSVFileManager {
                 OutputSpacePoint point = new OutputSpacePoint();
                 point.setInputSpacePoint(new InputSpacePoint());
                 for(int i=0;i<numberOfInputDimensions;i++)
-                    point.getInputSpacePoint().addDimension("x"+(i+1), new Double(line[i]));
-                point.setValue("objective", new Double(line[outputDimensionIndex]));
+                    point.getInputSpacePoint().addDimension(variables.get(i), new Double(line[i]));
+                HashMap<String, Double> v = new HashMap<String, Double>();
+                v.put(variables.get(outputDimensionIndex), new Double(line[outputDimensionIndex]));
+				point.setValues(v);
                 results.add(point);
             }
             reader.close();

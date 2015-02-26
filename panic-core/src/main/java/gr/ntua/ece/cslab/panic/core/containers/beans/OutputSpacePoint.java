@@ -75,6 +75,20 @@ public class OutputSpacePoint  {
         return ret;
     }
 
+    public String toCSVString(String delimiter) {
+    	String ret = "";
+    	ret+=this.inputSpacePoint.toStringCSVFormat(",")+delimiter;
+    	int i=0;
+    	for( Entry<String, Double> e : outputPoints.entrySet()){
+    		ret+=e.getValue();
+    		i++;
+    		if(i<outputPoints.size()){
+    			ret+=delimiter;
+    		}
+    	}
+    	
+        return ret;
+    }
 
 	public void setValues(HashMap<String, Double> values) {
 		this.outputPoints = values;

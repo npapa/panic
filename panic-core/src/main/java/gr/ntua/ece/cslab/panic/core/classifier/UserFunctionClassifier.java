@@ -36,16 +36,18 @@ public class UserFunctionClassifier extends Classifier{
 	}
 
 	public void configure(HashMap<String, String> conf) {
+		//System.out.println(conf);
     	for( String outVar : model.getOutputSpace().keySet()){
         	functions.put(outVar, conf.get(outVar));
     	}
-		
+		//System.out.println(functions);
 	}
 
 	@Override
 	public double classifyInstance(Instance instance) throws Exception {
 		//System.out.println(instance);
 		Evaluator evaluator = new Evaluator();
+		Double res=0.0;
 		int index = model.getInputSpace().size();
     	for( String outVar : model.getOutputSpace().keySet()){
     		String tempFunction = new String(functions.get(outVar));;
@@ -55,13 +57,13 @@ public class UserFunctionClassifier extends Classifier{
     			tempFunction=tempFunction.replace(inVar, instance.value(inputIndex)+"");
     			inputIndex++;
     		}
-    		Double res = Double.parseDouble(evaluator.evaluate(tempFunction));
+    		res = Double.parseDouble(evaluator.evaluate(tempFunction));
     		//System.out.println("adding: "+outVar + " " +tempFunction+" "+res);
     		instance.setValue(new Attribute(outVar,index++), res);
     	}
 		//System.out.println(instance);
-		
-		return 0;//super.classifyInstance(instance);
+		//System.out.println(res);
+		return res;
 	}
 	
 

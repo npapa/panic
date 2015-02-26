@@ -21,6 +21,7 @@ import gr.ntua.ece.cslab.panic.core.containers.beans.OutputSpacePoint;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import weka.classifiers.Classifier;
@@ -97,10 +98,10 @@ public abstract class AbstractWekaModel implements Model {
         outputPoint.setInputSpacePoint(point);
         //result.setValues(values);
         Instance instance = convertPointToInstance(point,outputPoint);
-        this.classifier.classifyInstance(instance);
+        Double res = this.classifier.classifyInstance(instance);
         int index = point.numberDimensions();
         for(String k : outputPoint.getOutputPoints().keySet()){
-        	outputPoint.getOutputPoints().put(k, instance.value(index));
+        	outputPoint.getOutputPoints().put(k, res);
         	index++;
         }
         //result.setValue("objective", ));
@@ -164,10 +165,15 @@ public abstract class AbstractWekaModel implements Model {
             Attribute att = new Attribute(k, index++);
             inst.setValue(att, point.getValue(k));
         }
-        for(String k : outputPoint.getOutputPoints().keySet()){
-            inst.setMissing(index++);
+        for(Entry<String, Double> e : outputPoint.getOutputPoints().entrySet()){
+        	if(e.getValue()==null){
+        		inst.setMissing(index++);
+        	}
+        	else{
+                Attribute att = new Attribute(e.getKey(), index++);
+                inst.setValue(att, e.getValue());
+        	}
         }
-        
         
         //assign instance to dataset
         FastVector att  = new FastVector(point.numberDimensions()+1);
@@ -176,7 +182,6 @@ public abstract class AbstractWekaModel implements Model {
         for(String k : outputPoint.getOutputPoints().keySet()){
             att.addElement(new Attribute(k, index++));
         }
-        
         
         Instances dataset = new Instances("instances", att, point.numberDimensions()+1);
         dataset.setClassIndex(dataset.numAttributes()-1);
@@ -213,19 +218,22 @@ public abstract class AbstractWekaModel implements Model {
      * @return 
      */
     protected static Instances getInstances(List<OutputSpacePoint> points) {
-        
-        OutputSpacePoint first = points.get(0);
-        Instance inst = convertPointToInstance(first);
-        FastVector att  = new FastVector(first.getInputSpacePoint().numberDimensions()+1);
+    	OutputSpacePoint first = points.get(0);
+        FastVector att  = new FastVector(first.getInputSpacePoint().numberDimensions()+first.numberDimensions());
         int index=0;
         for(String s:first.getInputSpacePoint().getKeysAsCollection())
             att.addElement(new Attribute(s, index++));
-        att.addElement(new Attribute(first.getKey(), index++));
+
+        for(String s:first.getOutputPoints().keySet())
+        	att.addElement(new Attribute(s, index++));
         
-        Instances instances = new Instances("instances", att, first.getInputSpacePoint().numberDimensions()+1);
-        for(OutputSpacePoint p : points)
-            instances.add(convertPointToInstance(p));
-        instances.setClassIndex(instances.numAttributes()-1);
+        Instances instances = new Instances("instances", att, first.getInputSpacePoint().numberDimensions()+first.numberDimensions());
+    	for(OutputSpacePoint p : points){
+    		Instance i = convertPointToInstance(p.getInputSpacePoint(),p);
+    		instances.add(i);
+    		System.out.println(i);
+    	}
+        instances.setClassIndex(first.getInputSpacePoint().numberDimensions());
         return instances;
     }
 

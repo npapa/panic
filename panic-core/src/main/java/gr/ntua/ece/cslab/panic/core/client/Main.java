@@ -37,7 +37,6 @@ import java.util.List;
 public class Main extends Benchmark {
 
     public static void main(String[] args) throws Exception {
-
         long benchmarkStart = System.currentTimeMillis();
         configure(args);        // instantiating models and samplers
         String debug="";
@@ -71,7 +70,7 @@ public class Main extends Benchmark {
                 InputSpacePoint nextSample = s.next();
                 picked.add(nextSample);
                 OutputSpacePoint out = file.getActualValue(nextSample);
-                System.out.format("\t#%d point picked %s\n", i++, nextSample.toString());
+                System.out.format("\t#%d point picked %s\n", i++, out.toString());
                 for (Model m : models) {
                     m.feed(out, false);
                 }
@@ -82,13 +81,22 @@ public class Main extends Benchmark {
                 m.train();
             }
             for(Model m : models){
-            	InputSpacePoint ip =  new InputSpacePoint();
+
+                InputSpacePoint ip =  new InputSpacePoint();
                 HashMap<String, Double> values = new HashMap<String, Double>();
-                values.put("x1", 2.0);
-                values.put("x2", 1.0);
-                values.put("x3", 70.0);
+                values.put("nodes", 2.0);
+                values.put("cores", 1.0);
+                values.put("size", 50.0);
                 ip.setValues(values);
-                debug+= m.getPoint(ip)+" !\n";
+                
+
+        		OutputSpacePoint op =  new 	OutputSpacePoint();
+                HashMap<String, Double> v2 = new HashMap<String, Double>();
+                v2.put("time", null);
+                
+                op.setValues(v2);
+                OutputSpacePoint res = m.getPoint(ip,op);
+                debug+=res+"\n";
             	m.serialize("/Users/npapa/Documents/workspace/panic/panic-core/models/mlp"+ii+".model");
             	ii++;
             }
@@ -107,11 +115,20 @@ public class Main extends Benchmark {
             Model test = AbstractWekaModel.readFromFile("/Users/npapa/Documents/workspace/panic/panic-core/models/mlp"+i+".model");
             InputSpacePoint ip =  new InputSpacePoint();
             HashMap<String, Double> values = new HashMap<String, Double>();
-            values.put("x1", 2.0);
-            values.put("x2", 1.0);
-            values.put("x3", 70.0);
+            values.put("nodes", 2.0);
+            values.put("cores", 1.0);
+            values.put("size", 50.0);
             ip.setValues(values);
-            System.out.println(test.getPoint(ip));
+            
+
+    		OutputSpacePoint op =  new 	OutputSpacePoint();
+            HashMap<String, Double> v2 = new HashMap<String, Double>();
+            v2.put("time", null);
+            
+            op.setValues(v2);
+            OutputSpacePoint res = test.getPoint(ip,op);
+            
+            System.out.println(res+" sdfgdsfgdz");
 			
 		}
         
