@@ -68,7 +68,7 @@ public class CSVFileManager {
                 for (int i = 0; i < header.length; i++) {
 					variables.add(header[i]);
 				}
-                System.out.println(variables);
+                //System.out.println(variables);
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CSVFileManager.class.getName()).log(Level.SEVERE, null, ex);

@@ -25,8 +25,15 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.functions.GaussianProcesses;
+import weka.classifiers.functions.IsotonicRegression;
+import weka.classifiers.functions.LeastMedSq;
 import weka.classifiers.functions.MultilayerPerceptron;
+import weka.classifiers.functions.RBFNetwork;
 import weka.classifiers.functions.SimpleLinearRegression;
+import weka.classifiers.meta.Bagging;
+import weka.classifiers.meta.RandomSubSpace;
+import weka.classifiers.meta.RegressionByDiscretization;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -118,11 +125,32 @@ public abstract class AbstractWekaModel implements Model {
     	 Classifier cls = (Classifier) weka.core.SerializationHelper.read(directory);
     	 Class wekaClass = cls.getClass();
     	 Model ret = null;
-    	 if(wekaClass.equals(MultilayerPerceptron.class)){
+    	 if(wekaClass.equals(RBFNetwork.class)){
+    		 ret = (Model) RBF.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(RandomSubSpace.class)){
+    		 ret = (Model) RandomSubSpaces.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(MultilayerPerceptron.class)){
     		 ret = (Model) MLPerceptron.class.getConstructor().newInstance();
     	 }
     	 else if(wekaClass.equals(SimpleLinearRegression.class)){
     		 ret = (Model) LinearRegression.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(LeastMedSq.class)){
+    		 ret = (Model) LeastSquares.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(IsotonicRegression.class)){
+    		 ret = (Model) IsoRegression.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(GaussianProcesses.class)){
+    		 ret = (Model) GaussianCurves.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(RegressionByDiscretization.class)){
+    		 ret = (Model) Discretization.class.getConstructor().newInstance();
+    	 }
+    	 else if(wekaClass.equals(Bagging.class)){
+    		 ret = (Model) BagClassify.class.getConstructor().newInstance();
     	 }
          ret.setClassifier(cls);
     	 return ret;
@@ -231,7 +259,7 @@ public abstract class AbstractWekaModel implements Model {
     	for(OutputSpacePoint p : points){
     		Instance i = convertPointToInstance(p.getInputSpacePoint(),p);
     		instances.add(i);
-    		System.out.println(i);
+    		//System.out.println(i);
     	}
         instances.setClassIndex(first.getInputSpacePoint().numberDimensions());
         return instances;
