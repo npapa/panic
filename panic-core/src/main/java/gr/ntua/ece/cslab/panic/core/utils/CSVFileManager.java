@@ -42,7 +42,7 @@ public class CSVFileManager {
     private String filename;
     private int numberOfInputDimensions;
     private int outputDimensionIndex;
-    private char delimiter = '\t';
+    private char delimiter = ',';
     private List<String> variables;
     
     public CSVFileManager() {
@@ -60,7 +60,7 @@ public class CSVFileManager {
             String buffer = null;
             if(reader.ready()){
                 buffer = reader.readLine();
-                String[] header = buffer.split("\t");
+                String[] header = buffer.split(delimiter+"");
                 
                 numberOfInputDimensions  = header.length -1;
                 outputDimensionIndex  = header.length -1;
